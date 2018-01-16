@@ -1,14 +1,7 @@
 --オルターガイスト・マルチフェイカー
 --Altergeist Multifaker
 function c101004014.initial_effect(c)
-	--special summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetOperation(aux.chainreg)
-	c:RegisterEffect(e1)
+	--special summon procedure
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(101004014,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -18,16 +11,17 @@ function c101004014.initial_effect(c)
 	e2:SetCountLimit(1,101004014)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCondition(c101004014.spcon1)
-	e2:SetTarget(c101004014.sptg1)
-	e2:SetOperation(c101004014.spop1)
+	e2:SetTarget(c101004014.sptg)
+	e2:SetOperation(c101004014.spop)
 	c:RegisterEffect(e2)
-	--spsummon
+	--special summon from deck
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(101004014,0))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetCountLimit(1,101004014+100)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,42790072)
 	e3:SetCost(c101004014.spcost)
 	e3:SetTarget(c101004014.sptg2)
 	e3:SetOperation(c101004014.spop2)
@@ -38,14 +32,15 @@ function c101004014.counterfilter(c)
 	return c:IsSetCard(0x103)
 end
 function c101004014.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return rp==tp and re:IsActiveType(TYPE_TRAP) and e:GetHandler():GetFlagEffect(1)>0
+	return re:IsActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+		and rp==tp 
 end
-function c101004014.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
+function c101004014.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c101004014.spop1(e,tp,eg,ep,ev,re,r,rp)
+function c101004014.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
