@@ -58,11 +58,16 @@ function c100410020.thcheck(sg,e,tp)
 	return sg:GetClassCount(Card.GetCode)==2
 end
 function c100410020.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:GetControler()==tp and chkc:GetLocation()==LOCATION_GRAVE and c100410020.thfilter2(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c100410020.thfilter2,tp,LOCATION_GRAVE,0,2,nil,e) end
+	local g=Duel.GetMatchingGroup(c100410020.thfilter2,tp,LOCATION_GRAVE,0,nil,e)
+	if chk==0 then return g:GetClassCount(Card.GetCode)>=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,c100410020.thfilter2,tp,LOCATION_GRAVE,0,2,2,nil,e)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
+	local g1=g:Select(tp,1,1,nil)
+	g:Remove(Card.IsCode,nil,g1:GetFirst():GetCode())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g2=g:Select(tp,1,1,nil)
+	g1:Merge(g2)
+	Duel.SetTargetCard(g1)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,2,0,0)
 end
 function c100410020.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
